@@ -1,0 +1,22 @@
+# Wirtualne środowisko (NIGDY nie wrzucamy na GitHuba!)
+venv/
+.venv/
+env/
+
+# Pamięć podręczna Pythona (pliki kompilacji)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Bazy danych (Nie wrzucamy danych na GitHuba, żeby go nie zapchać)
+*.db
+*.sqlite
+*.sqlite3
+auta_baza.db
+
+# Ustawienia lokalne edytora VS Code
+.vscode/
+
+# Zmienne środowiskowe i sekrety (przydadzą się później, np. do haseł)
+.env
+
