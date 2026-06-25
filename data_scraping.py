@@ -47,4 +47,5 @@ if response.status_code == 200:
         print("-" * 40)
 
 else:
-    print(f"Błąd połączenia! Kod błędu: {response.status_code}")
+    print(f"Błąd połączenia ze stroną! Kod błędu: {response.status_code}")
+    
