@@ -20,3 +20,5 @@ auta_baza.db
 # Zmienne środowiskowe i sekrety (przydadzą się później, np. do haseł)
 .env
 
+*.json
+*.csv
