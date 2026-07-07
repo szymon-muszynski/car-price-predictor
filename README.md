@@ -1,39 +1,88 @@
 # 🚗 Car Price Predictor (W trakcie tworzenia / WIP)
- 
+
 Celem tego projektu jest zbudowanie kompleksowego systemu (End-to-End) do przewidywania cen samochodów używanych. Projekt ma na celu przejście przez pełen cykl pracy z danymi: od samodzielnego pozyskania surowych ofert z internetu, przez inżynierię danych i eksperymenty z modelami Machine Learning, aż po wystawienie gotowego modelu przez API i podpięcie go pod prosty interfejs w React.
- 
+
+*Uwaga: Główny plik z surowymi danymi (ze względu na duży rozmiar) nie jest wgrywany do repozytorium.*
+
 ## 🎯 Główne założenia i plan projektu
- 
-Projekt jest podzielony na cztery etapy, które będą realizowane po kolei:
- 
-### 1. Ekstrakcja danych (Web Scraping)
- 
+
+Projekt jest podzielony na cztery etapy:
+
+### 1. Ekstrakcja danych (Web Scraping) - ✅ *Zrealizowano*
+
 - **Cel:** Zbudowanie skryptu pobierającego aktualne ogłoszenia motoryzacyjne z wybranych portali.
-- **Zakres:** Pobranie atrybutów takich jak: marka, model, rocznik, przebieg, rodzaj paliwa, pojemność silnika oraz cena docelowa.
-- **Technologie:** Python (BeautifulSoup / Scrapy).
-### 2. Przetwarzanie danych (ETL & Feature Engineering)
- 
-- **Cel:** Oczyszczenie surowych danych pobranych ze strony (parsowanie stringów na wartości liczbowe, obsługa braków w ogłoszeniach).
-- **Zakres:** Przygotowanie skryptu, który transformuje zeskrapowane dane i ładuje je do lokalnej bazy danych gotowej do analizy.
-- **Technologie:** Pandas, NumPy, SQLite / PostgreSQL.
-### 3. Modelowanie i Eksperymenty (Machine Learning)
- 
+- **Wdrożenie:** Napisano skrypt (`fast_scraping.py`) iterujący przez 500 stron serwisu Otomoto, który pobiera kilkanaście tysięcy unikalnych ofert. Zamiast tradycyjnego parsowania struktury HTML, skrypt wydobywa dane bezpośrednio z ukrytego cache'u GraphQL (obiekt JSON z tagu `__NEXT_DATA__`), co zapewnia dużą stabilność i szybkość.
+- **Zakres:** Pobranie atrybutów takich jak: marka, rocznik, przebieg, rodzaj paliwa, pojemność silnika, moc, skrzynia biegów oraz cena docelowa.
+- **Technologie:** Python (`requests`, `BeautifulSoup`, `json`).
+
+### 2. Przetwarzanie danych (ETL & Feature Engineering) - ✅ *Zrealizowano*
+
+- **Cel:** Oczyszczenie surowych danych pobranych ze strony i przekształcenie ich w format gotowy do trenowania algorytmów.
+- **Wdrożenie:**
+  - Usunięcie braków danych (NaN) oraz ekstremalnie rzadkich grup (np. napęd wodorowy).
+  - Oczyszczenie ciągów znaków (usunięcie "PLN", "km", "cm3") i konwersja na typy liczbowe.
+  - **Filtrowanie domenowe (Outliery):** Odrzucenie anomalii na podstawie logiki motoryzacyjnej (np. zablokowanie aut starszych niż 1990 rok, cen powyżej 800 tys. PLN czy przebiegów powyżej 700 tys. km).
+  - **Inżynieria Cech:** Wyciągnięcie nazwy marki bezpośrednio z tytułu ogłoszenia, zamiana rocznika na wiek pojazdu w latach, oraz pogrupowanie rzadkich marek w jedną kategorię "Inne".
+  - Przygotowanie maszyny do wczytywania zmiennych kategorycznych poprzez One-Hot Encoding.
+- **Technologie:** Pandas, NumPy.
+
+### 3. Modelowanie i Eksperymenty (Machine Learning) - ✅ *Zrealizowano*
+
 - **Cel:** Wyłonienie modelu, który najdokładniej przewiduje cenę auta na podstawie cech.
-- **Zakres:** Eksploracyjna analiza danych (EDA) w notatnikach Jupyter. Zbadanie i porównanie skuteczności różnych podejść – od klasycznej regresji liniowej, przez modele oparte na drzewach (np. Random Forest, XGBoost), po proste sieci neuronowe.
-- **Technologie:** Scikit-learn, XGBoost, PyTorch/TensorFlow (opcjonalnie).
-### 4. Wdrożenie (Backend + Frontend)
- 
-- **Cel:** Udostępnienie najlepszego modelu w formie działającej mini-aplikacji webowej.
-- **Zakres:**
-  - **Backend:** Napisanie API w Pythonie, które wczytuje zapisany model (`.pkl` / `.onnx`) i przyjmuje zapytania z parametrami samochodu, zwracając estymowaną cenę.
-  - **Frontend:** Stworzenie prostego formularza dla użytkownika w przeglądarce, który odpytuje API i wyświetla wynik.
-- **Technologie:** FastAPI (Python), React.js.
-## 🛠️ Planowany stos technologiczny
- 
-- Python, JavaScript
-- Scikit-learn, Pandas, BeautifulSoup
-- FastAPI, React.js
-- SQLite
+- **Wdrożenie:** Przeprowadzono gruntowne eksperymenty, sprawdzając jak różne architektury radzą sobie z wyceną:
+  1. **Klasyczna Regresja Liniowa:** Użyta jako model bazowy (Baseline) ze skutecznością na poziomie ~70.5% (R²).
+  2. **Regresja Wielomianowa:** Zastosowano `Pipeline` i `ColumnTransformer`, ograniczając generowanie wielomianów i użycie `StandardScaler` wyłącznie do zmiennych ciągłych, co pozwoliło uniknąć wybuchu wymiarowości zdefiniowanej przez One-Hot Encoding.
+  3. **Lasy Losowe (Random Forest):** Zoptymalizowano hiperparametry modelu (m.in. głębokość i liczbę aut w liściach blokującą szum) za pomocą algorytmu `RandomizedSearchCV`.
+  4. **Gradient Boosted Trees (GBT):** Wdrożono model działający sekwencyjnie i korygujący trudne przypadki wycen.
+  5. **Model Finałowy (Ensembling):** Połączono siły najlepszych modeli (Wielomianowego, RF oraz GBT) za pomocą narzędzia `StackingRegressor`. Nadzorujący Meta-Model (Regresja Liniowa) waży predykcje poszczególnych architektur, co pozwoliło na podbicie ostatecznej skuteczności do blisko 89.7% (R²) na zbiorze testowym.
+- **Zapis modelu:** Wyuczony model (wraz ze skalerami i całym pipeline'em) oraz lista kolumn zostały zrzucone do plików `.pkl` za pomocą biblioteki `joblib`, co pozwala na ich bezproblemowe ładowanie po stronie serwera.
+- **Technologie:** Scikit-learn, Pandas.
+
+### 4. Wdrożenie (Backend + Frontend) - ✅ *Zrealizowano (MVP)*
+
+- **Cel:** Udostępnienie najlepszego modelu w formie działającej aplikacji webowej.
+- **Wdrożenie:**
+  - **Backend (FastAPI):** Napisano API w Pythonie, które ładuje model z pliku `.pkl` do pamięci. Endpoint `/predict` przyjmuje parametry od użytkownika, automatycznie tworzy wektor z zerami i jedynkami (One-Hot Encoding w locie, na podstawie zapisanej struktury kolumn) i zwraca predykcję.
+  - **Frontend (React + Vite + TypeScript):** Zbudowano formularz pozwalający użytkownikowi wpisać parametry auta, który następnie odpytuje backend i wyświetla szacowaną wartość w PLN.
+- **Technologie:** FastAPI (Python), React, Vite, TypeScript.
+
+![Zrzut ekranu aplikacji](image_ada484.png)
+
+## 🚀 Dalszy plan rozwoju (Roadmap)
+
+Kolejne kroki, które zaplanowałem w rozwoju aplikacji:
+
+1. **Rekomendacje kNN:** Implementacja algorytmu k-Nearest Neighbors (`NearestNeighbors` ze Scikit-learn), który pod wyceną z modelu będzie wyświetlał użytkownikowi 3 najbardziej zbliżone prawdziwe oferty z bazy (podobny rocznik, przebieg, itp.) wraz z linkami do otomoto. Buduje to zaufanie do predykcji.
+2. **Deploy:** Wystawienie backendu i frontendu na platformę hostingową.
+3. **Wykres spadku wartości:** Dodanie symulacji (wykresu), która będzie pokazywać, jak wpisane przez użytkownika auto będzie tracić na wartości przez kolejne np. 5 lat.
+
+## ⚙️ Uruchomienie lokalnie
+
+Aby odpalić projekt u siebie:
+
+**1. Backend:**
+
+W głównym folderze uruchom serwer FastAPI (pamiętaj o zainstalowaniu zależności i byciu w wirtualnym środowisku):
+
+```bash
+uvicorn main:app --reload
+```
+
+**2. Frontend:**
+
+Wejdź do folderu z aplikacją React, zainstaluj paczki i odpal serwer deweloperski:
+
+```bash
+npm install
+npm run dev
+```
+
+## 🛠️ Stos technologiczny
+
+- Python, JavaScript, TypeScript
+- Scikit-learn, Pandas, NumPy, BeautifulSoup
+- FastAPI, React.js, Vite
+
 ## 📈 Status projektu
- 
-Projekt znajduje się we wczesnej fazie rozwoju (planowanie i budowa modułu scrapującego). Skrypty oraz struktura katalogów będą dodawane na bieżąco.
+
+Postawiono MVP aplikacji: backend przyjmujący zapytania i zasilany wytrenowanym modelem oraz prosty frontend w React. Trwają prace nad rozbudową funkcjonalności zgodnie z roadmapą.
