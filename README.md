@@ -2,6 +2,10 @@
 
 Celem tego projektu jest zbudowanie kompleksowego systemu (End-to-End) do przewidywania cen samochodów używanych. Projekt ma na celu przejście przez pełen cykl pracy z danymi: od samodzielnego pozyskania surowych ofert z internetu, przez inżynierię danych i eksperymenty z modelami Machine Learning, aż po wystawienie gotowego modelu przez API i podpięcie go pod prosty interfejs w React.
 
+<p align="center">
+  <img width="733" height="834" alt="image" src="https://github.com/user-attachments/assets/74df8a21-ab83-4cf2-bda1-f63099952622" />
+</p>
+
 *Uwaga: Główny plik z surowymi danymi (ze względu na duży rozmiar) nie jest wgrywany do repozytorium.*
 
 ## 🎯 Główne założenia i plan projektu
@@ -45,8 +49,6 @@ Projekt jest podzielony na cztery etapy:
   - **Backend (FastAPI):** Napisano API w Pythonie, które ładuje model z pliku `.pkl` do pamięci. Endpoint `/predict` przyjmuje parametry od użytkownika, automatycznie tworzy wektor z zerami i jedynkami (One-Hot Encoding w locie, na podstawie zapisanej struktury kolumn) i zwraca predykcję.
   - **Frontend (React + Vite + TypeScript):** Zbudowano formularz pozwalający użytkownikowi wpisać parametry auta, który następnie odpytuje backend i wyświetla szacowaną wartość w PLN.
 - **Technologie:** FastAPI (Python), React, Vite, TypeScript.
-
-![Zrzut ekranu aplikacji](image_ada484.png)
 
 ## 🚀 Dalszy plan rozwoju (Roadmap)
 
