@@ -12,6 +12,16 @@ interface CarData {
   marka: string;
 }
 
+interface SimilarCar {
+  tytul: string;
+  cena: number;
+  rocznik: number;
+  przebieg: number;
+  moc: number;
+  pojemnosc_skokowa: number;
+  url: string;
+}
+
 function App() {
   const [formData, setFormData] = useState<CarData>({
     przebieg: '',
@@ -24,8 +34,11 @@ function App() {
   });
 
   const [predictedPrice, setPredictedPrice] = useState<number | null>(null);
+  const [similarCars, setSimilarCars] = useState<SimilarCar[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -35,15 +48,22 @@ function App() {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     setPredictedPrice(null);
+    setSimilarCars([]); // <-- Zerujemy listę przed nowym zapytaniem
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/predictions/price', formData);
-      setPredictedPrice(response.data.predicted_price);
+      // Wysyłamy dwa zapytania jednocześnie, żeby było szybciej
+      const [priceResponse, similarResponse] = await Promise.all([
+        axios.post('http://127.0.0.1:8000/api/predictions/price', formData),
+        axios.post('http://127.0.0.1:8000/api/predictions/similar', formData)
+      ]);
+      
+      setPredictedPrice(priceResponse.data.predicted_price);
+      setSimilarCars(similarResponse.data.similar_cars); // <-- Zapisujemy listę do stanu
     } catch (err: any) {
       console.error(err);
       setError('Wystąpił błąd podczas łączenia. Upewnij się, że backend działa.');
@@ -150,6 +170,52 @@ function App() {
           </h1>
         </div>
       )}
+
+      {/* NOWA SEKCJA: PODOBNE OFERTY */}
+      {similarCars.length > 0 && !error && (
+        <div style={{ marginTop: '2rem' }}>
+          <h3 style={{ color: '#2c3e50', borderBottom: '2px solid #ecf0f1', paddingBottom: '0.5rem' }}>
+            Najbardziej podobne oferty z Otomoto:
+          </h3>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem' }}>
+            {similarCars.map((car, index) => (
+              <a 
+                key={index} 
+                href={car.url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  padding: '1.5rem',
+                  backgroundColor: 'white',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  textDecoration: 'none',
+                  color: 'inherit',
+                  boxShadow: '0 2px 5px rgba(0,0,0,0.05)'
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.8rem' }}>
+                  <h4 style={{ margin: 0, color: '#2980b9', fontSize: '1.2rem' }}>{car.tytul}</h4>
+                  <span style={{ fontWeight: 'bold', fontSize: '1.3rem', color: '#e67e22' }}>
+                    {car.cena.toLocaleString('pl-PL')} PLN
+                  </span>
+                </div>
+                
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1.5rem', color: '#7f8c8d', fontSize: '1rem' }}>
+                  <span>Rok: <br /> {car.rocznik}</span>
+                  <span>Przebieg: <br /> {car.przebieg.toLocaleString('pl-PL')} km</span>
+                  <span>Moc: <br /> {car.moc} KM</span>
+                  <span>Pojemność: <br /> {car.pojemnosc_skokowa} cm³</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
