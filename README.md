@@ -14,7 +14,7 @@ Projekt jest podzielony na cztery etapy:
 
 ### 1. Ekstrakcja danych (Web Scraping) - ✅ *Zrealizowano*
 
-- **Cel:** Zbudowanie skryptu pobierającego aktualne ogłoszenia motoryzacyjne z wybranych portali.
+- **Cel:** Zbudowanie skryptu pobierającego aktualne ogłoszenia motoryzacyjne z portalu Otomoto.
 - **Wdrożenie:** Napisano skrypt (`fast_scraping.py`) iterujący przez 500 stron serwisu Otomoto, który pobiera kilkanaście tysięcy unikalnych ofert. Zamiast tradycyjnego parsowania struktury HTML, skrypt wydobywa dane bezpośrednio z ukrytego cache'u GraphQL (obiekt JSON z tagu `__NEXT_DATA__`), co zapewnia dużą stabilność i szybkość.
 - **Zakres:** Pobranie atrybutów takich jak: marka, rocznik, przebieg, rodzaj paliwa, pojemność silnika, moc, skrzynia biegów oraz cena docelowa. Są to cechy dostępne z poziomu listy dostępnej pod linkiem https://www.otomoto.pl/osobowe?page=2, gdzie `?page=2` oznacza numer strony, dlatego też w modelu nie uwzględniono dokładnego modelu samochodu. W przyszłości planowane jest rozwinięcie programu o uwzględnianie modelu pojazdu.
 - **Technologie:** Python (`requests`, `BeautifulSoup`, `json`).
@@ -48,15 +48,18 @@ Projekt jest podzielony na cztery etapy:
 - **Wdrożenie:**
   - **Backend (FastAPI):** Napisano API w Pythonie, które ładuje model z pliku `.pkl` do pamięci. Endpoint `/predict` przyjmuje parametry od użytkownika, automatycznie tworzy wektor z zerami i jedynkami (One-Hot Encoding w locie, na podstawie zapisanej struktury kolumn) i zwraca predykcję.
   - **Frontend (React + Vite + TypeScript):** Zbudowano formularz pozwalający użytkownikowi wpisać parametry auta, który następnie odpytuje backend i wyświetla szacowaną wartość w PLN.
+  - **Rekomendacje kNN (Podobne oferty):** Wytrenowano dodatkowy model `NearestNeighbors` (Scikit-learn) na tej samej bazie ofert, który dla podanych przez użytkownika parametrów auta wyszukuje 5 najbardziej zbliżonych, prawdziwych ogłoszeń (na podstawie przebiegu, mocy, pojemności silnika, wieku, marki itp.). Wyniki wyświetlane są w formie klikalnych kart pod wyceną — kliknięcie w kartę przenosi użytkownika bezpośrednio do oryginalnego ogłoszenia, co buduje zaufanie do predykcji modelu.
 - **Technologie:** FastAPI (Python), React, Vite, TypeScript.
+<p align="center">
+<img width="755" height="863" alt="image" src="https://github.com/user-attachments/assets/22e01dd7-97b6-4c2b-8952-eab5b775450f" />
+</p>
 
 ## 🚀 Dalszy plan rozwoju (Roadmap)
 
 Kolejne kroki, które zaplanowałem w rozwoju aplikacji:
 
-1. **Rekomendacje kNN:** Implementacja algorytmu k-Nearest Neighbors (`NearestNeighbors` ze Scikit-learn), który pod wyceną z modelu będzie wyświetlał użytkownikowi 3 najbardziej zbliżone prawdziwe oferty z bazy (podobny rocznik, przebieg, itp.) wraz z linkami do otomoto. Buduje to zaufanie do predykcji.
-2. **Deploy:** Wystawienie backendu i frontendu na platformę hostingową.
-3. **Wykres spadku wartości:** Dodanie symulacji (wykresu), która będzie pokazywać, jak wpisane przez użytkownika auto będzie tracić na wartości przez kolejne np. 5 lat.
+1. **Deploy:** Wystawienie backendu i frontendu na platformę hostingową.
+2. **Wykres spadku wartości:** Dodanie symulacji (wykresu), która będzie pokazywać, jak wpisane przez użytkownika auto będzie tracić na wartości przez kolejne np. 5 lat.
 
 ## ⚙️ Uruchomienie lokalnie
 
@@ -87,4 +90,4 @@ npm run dev
 
 ## 📈 Status projektu
 
-Postawiono MVP aplikacji: backend przyjmujący zapytania i zasilany wytrenowanym modelem oraz prosty frontend w React. Trwają prace nad rozbudową funkcjonalności zgodnie z roadmapą.
+Postawiono MVP aplikacji: backend przyjmujący zapytania i zasilany wytrenowanym modelem regresyjnym oraz modelem kNN do wyszukiwania podobnych ofert, a także prosty frontend w React z klikalnymi kartami rekomendacji. Trwają prace nad rozbudową funkcjonalności zgodnie z roadmapą.
