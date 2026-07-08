@@ -16,7 +16,7 @@ Projekt jest podzielony na cztery etapy:
 
 - **Cel:** Zbudowanie skryptu pobierającego aktualne ogłoszenia motoryzacyjne z wybranych portali.
 - **Wdrożenie:** Napisano skrypt (`fast_scraping.py`) iterujący przez 500 stron serwisu Otomoto, który pobiera kilkanaście tysięcy unikalnych ofert. Zamiast tradycyjnego parsowania struktury HTML, skrypt wydobywa dane bezpośrednio z ukrytego cache'u GraphQL (obiekt JSON z tagu `__NEXT_DATA__`), co zapewnia dużą stabilność i szybkość.
-- **Zakres:** Pobranie atrybutów takich jak: marka, rocznik, przebieg, rodzaj paliwa, pojemność silnika, moc, skrzynia biegów oraz cena docelowa.
+- **Zakres:** Pobranie atrybutów takich jak: marka, rocznik, przebieg, rodzaj paliwa, pojemność silnika, moc, skrzynia biegów oraz cena docelowa. Są to cechy dostępne z poziomu listy dostępnej pod linkiem https://www.otomoto.pl/osobowe?page=2, gdzie `?page=2` oznacza numer strony, dlatego też w modelu nie uwzględniono dokładnego modelu samochodu. W przyszłości planowane jest rozwinięcie programu o uwzględnianie modelu pojazdu.
 - **Technologie:** Python (`requests`, `BeautifulSoup`, `json`).
 
 ### 2. Przetwarzanie danych (ETL & Feature Engineering) - ✅ *Zrealizowano*
