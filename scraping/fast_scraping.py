@@ -79,7 +79,7 @@ for i in range(1, 500):
 
 print(f"\nSukces! Zebrano {len(scraped_cars)} ogłoszeń aut w {(time.time() - t_start):.2f} sekund!")
 
-with open("fast_cars_data.json", "w", encoding="utf-8") as f:
+with open("../backend/data/raw/fast_cars_data.json", "w", encoding="utf-8") as f:
     json.dump(scraped_cars, f, ensure_ascii=False, indent=4)
     
 time_end = time.time()
