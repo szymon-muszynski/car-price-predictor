@@ -58,8 +58,8 @@ const handleSubmit = async (e: React.FormEvent) => {
     try {
       // Wysyłamy dwa zapytania jednocześnie, żeby było szybciej
       const [priceResponse, similarResponse] = await Promise.all([
-        axios.post('http://127.0.0.1:8000/api/predictions/price', formData),
-        axios.post('http://127.0.0.1:8000/api/predictions/similar', formData)
+        axios.post('https://car-price-api-sbfh.onrender.com/api/predictions/price', formData),
+        axios.post('https://car-price-api-sbfh.onrender.com/api/predictions/similar', formData)
       ]);
       
       setPredictedPrice(priceResponse.data.predicted_price);
