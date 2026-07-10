@@ -27,3 +27,8 @@ auta_baza.db
 !package-lock.json
 !frontend/package.json
 !frontend/package-lock.json
+
+!tsconfig.json
+!tsconfig.*.json
+!frontend/tsconfig.json
+!frontend/tsconfig.*.json
