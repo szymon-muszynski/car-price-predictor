@@ -2,7 +2,6 @@
 venv/
 .venv/
 env/
-*.pkl
 
 # Pamięć podręczna Pythona (pliki kompilacji)
 __pycache__/
