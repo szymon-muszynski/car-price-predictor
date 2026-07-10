@@ -10,8 +10,8 @@ BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 KNN_DIR = DATA_DIR / "kNN_model"
 
-MODEL_PATH = "car_price_model_500_pages.pkl"
-COLUMNS_PATH = "model_columns_500_pages.pkl"
+MODEL_PATH = "light_car_price_model_500_pages.pkl"
+COLUMNS_PATH = "light_model_columns_500_pages.pkl"
 
 KNN_MODEL_PATH = "knn_model_similar_cars.pkl"
 KNN_SCALER_PATH = "knn_scaler.pkl"
