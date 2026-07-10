@@ -158,7 +158,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
       {loading && (
         <div style={{ marginTop: '1.5rem', padding: '1rem', backgroundColor: '#fff3cd', color: '#856404', borderRadius: '5px', border: '1px solid #ffeeba', textAlign: 'center', lineHeight: '1.5' }}>
-          ⏳ <strong>Uwaga:</strong> Pierwsza wycena może potrwać do 50 sekund, ponieważ nasz darmowy serwer musi się "wybudzić" z uśpienia. <br/>
+          ⏳ <strong>Uwaga:</strong> Pierwsza wycena może potrwać do 50 sekund, ponieważ darmowy serwer po dłuższym czasie oczekiwania musi się uruchomić. <br/>
           Kolejne zapytania będą już błyskawiczne. Proszę o cierpliwość! ☕
         </div>
       )}
