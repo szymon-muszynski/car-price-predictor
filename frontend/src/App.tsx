@@ -53,17 +53,16 @@ const handleSubmit = async (e: React.FormEvent) => {
     setLoading(true);
     setError(null);
     setPredictedPrice(null);
-    setSimilarCars([]); // <-- Zerujemy listę przed nowym zapytaniem
+    setSimilarCars([]); 
 
     try {
-      // Wysyłamy dwa zapytania jednocześnie, żeby było szybciej
       const [priceResponse, similarResponse] = await Promise.all([
         axios.post('https://car-price-api-sbfh.onrender.com/api/predictions/price', formData),
         axios.post('https://car-price-api-sbfh.onrender.com/api/predictions/similar', formData)
       ]);
       
       setPredictedPrice(priceResponse.data.predicted_price);
-      setSimilarCars(similarResponse.data.similar_cars); // <-- Zapisujemy listę do stanu
+      setSimilarCars(similarResponse.data.similar_cars);
     } catch (err: any) {
       console.error(err);
       setError('Wystąpił błąd podczas łączenia. Upewnij się, że backend działa.');
@@ -178,7 +177,6 @@ const handleSubmit = async (e: React.FormEvent) => {
         </div>
       )}
 
-      {/* NOWA SEKCJA: PODOBNE OFERTY */}
       {similarCars.length > 0 && !error && (
         <div style={{ marginTop: '2rem' }}>
           <h3 style={{ color: '#2c3e50', borderBottom: '2px solid #ecf0f1', paddingBottom: '0.5rem' }}>
