@@ -1,5 +1,7 @@
 # 🚗 Car Price Predictor (W trakcie tworzenia / WIP)
 
+**🌐 Live Demo: [Kliknij tutaj, aby przetestować aplikację na żywo!](https://car-price-frontend-jy6q.onrender.com/)**
+
 Celem tego projektu jest zbudowanie kompleksowego systemu (End-to-End) do przewidywania cen samochodów używanych. Projekt ma na celu przejście przez pełen cykl pracy z danymi: od samodzielnego pozyskania surowych ofert z internetu, przez inżynierię danych i eksperymenty z modelami Machine Learning, aż po wystawienie gotowego modelu przez API i podpięcie go pod prosty interfejs w React.
 
 <p align="center">
@@ -58,7 +60,7 @@ Projekt jest podzielony na cztery etapy:
 
 Kolejne kroki, które zaplanowałem w rozwoju aplikacji:
 
-1. **Deploy:** Wystawienie backendu i frontendu na platformę hostingową.
+1. ~~**Deploy:** Wystawienie backendu i frontendu na platformę hostingową.~~
 2. **Wykres spadku wartości:** Dodanie symulacji (wykresu), która będzie pokazywać, jak wpisane przez użytkownika auto będzie tracić na wartości przez kolejne np. 5 lat.
 
 ## ⚙️ Uruchomienie lokalnie
@@ -90,4 +92,4 @@ npm run dev
 
 ## 📈 Status projektu
 
-Postawiono MVP aplikacji: backend przyjmujący zapytania i zasilany wytrenowanym modelem regresyjnym oraz modelem kNN do wyszukiwania podobnych ofert, a także prosty frontend w React z klikalnymi kartami rekomendacji. Trwają prace nad rozbudową funkcjonalności zgodnie z roadmapą.
+Postawiono i wdrożono do chmury MVP aplikacji: backend przyjmujący zapytania i zasilany wytrenowanym modelem regresyjnym oraz modelem kNN do wyszukiwania podobnych ofert, a także prosty frontend w React z klikalnymi kartami rekomendacji. Trwają prace nad rozbudową funkcjonalności zgodnie z roadmapą.
