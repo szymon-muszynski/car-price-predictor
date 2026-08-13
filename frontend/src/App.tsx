@@ -22,7 +22,6 @@ interface SimilarCar {
   url: string;
 }
 
-
 type FieldErrors = Partial<Record<keyof CarData, string>>;
 
 function App() {
@@ -40,7 +39,13 @@ function App() {
   const [similarCars, setSimilarCars] = useState<SimilarCar[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({}); 
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+
+  const inputStyle = (hasError?: string) => ({
+    padding: '0.5rem',
+    border: `1px solid ${hasError ? '#e74c3c' : '#ccc'}`,
+    borderRadius: '4px'
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -91,6 +96,7 @@ function App() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     
     if (!validateForm()) {
       return;
@@ -130,12 +136,30 @@ function App() {
         <div style={{ display: 'flex', gap: '1rem' }}>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <label>Przebieg (km):</label>
-            <input type="number" min="0" max="699999" name="przebieg" value={formData.przebieg} onChange={handleChange} required style={{ padding: '0.5rem', borderColor: fieldErrors.przebieg ? '#e74c3c' : '#ccc' }} />
+            <input
+              type="number"
+              min="0"
+              max="699999"
+              name="przebieg"
+              value={formData.przebieg}
+              onChange={handleChange}
+              required
+              style={inputStyle(fieldErrors.przebieg)}
+            />
             {fieldErrors.przebieg && <span style={{ color: '#e74c3c', fontSize: '0.85rem', marginTop: '0.3rem' }}>{fieldErrors.przebieg}</span>}
           </div>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <label>Wiek (lata):</label>
-            <input type="number" min="0" max="36" name="wiek" value={formData.wiek} onChange={handleChange} required style={{ padding: '0.5rem', borderColor: fieldErrors.wiek ? '#e74c3c' : '#ccc' }} />
+            <input
+              type="number"
+              min="0"
+              max="36"
+              name="wiek"
+              value={formData.wiek}
+              onChange={handleChange}
+              required
+              style={inputStyle(fieldErrors.wiek)}
+            />
             {fieldErrors.wiek && <span style={{ color: '#e74c3c', fontSize: '0.85rem', marginTop: '0.3rem' }}>{fieldErrors.wiek}</span>}
           </div>
         </div>
@@ -143,12 +167,30 @@ function App() {
         <div style={{ display: 'flex', gap: '1rem' }}>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <label>Moc (KM):</label>
-            <input type="number" min="1" max="1000" name="moc" value={formData.moc} onChange={handleChange} required style={{ padding: '0.5rem', borderColor: fieldErrors.moc ? '#e74c3c' : '#ccc' }} />
+            <input
+              type="number"
+              min="1"
+              max="1000"
+              name="moc"
+              value={formData.moc}
+              onChange={handleChange}
+              required
+              style={inputStyle(fieldErrors.moc)}
+            />
             {fieldErrors.moc && <span style={{ color: '#e74c3c', fontSize: '0.85rem', marginTop: '0.3rem' }}>{fieldErrors.moc}</span>}
           </div>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <label>Pojemność (cm³):</label>
-            <input type="number" min="0" max="8500" name="pojemnosc_skokowa" value={formData.pojemnosc_skokowa} onChange={handleChange} required style={{ padding: '0.5rem', borderColor: fieldErrors.pojemnosc_skokowa ? '#e74c3c' : '#ccc' }} />
+            <input
+              type="number"
+              min="0"
+              max="8500"
+              name="pojemnosc_skokowa"
+              value={formData.pojemnosc_skokowa}
+              onChange={handleChange}
+              required
+              style={inputStyle(fieldErrors.pojemnosc_skokowa)}
+            />
             {fieldErrors.pojemnosc_skokowa && <span style={{ color: '#e74c3c', fontSize: '0.85rem', marginTop: '0.3rem' }}>{fieldErrors.pojemnosc_skokowa}</span>}
           </div>
         </div>
@@ -162,7 +204,7 @@ function App() {
             onChange={handleChange} 
             required 
             placeholder="np. BMW, Toyota, Mercedes-Benz"
-            style={{ padding: '0.5rem', borderColor: fieldErrors.marka ? '#e74c3c' : '#ccc' }} 
+            style={inputStyle(fieldErrors.marka)} 
           />
           {fieldErrors.marka && <span style={{ color: '#e74c3c', fontSize: '0.85rem', marginTop: '0.3rem' }}>{fieldErrors.marka}</span>}
         </div>
