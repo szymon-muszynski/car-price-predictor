@@ -22,6 +22,9 @@ interface SimilarCar {
   url: string;
 }
 
+
+type FieldErrors = Partial<Record<keyof CarData, string>>;
+
 function App() {
   const [formData, setFormData] = useState<CarData>({
     przebieg: '',
@@ -37,8 +40,7 @@ function App() {
   const [similarCars, setSimilarCars] = useState<SimilarCar[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
-  
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({}); 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
@@ -46,10 +48,54 @@ function App() {
       ...formData,
       [name]: type === 'number' ? (value === '' ? '' : Number(value)) : value
     });
+    if (fieldErrors[name as keyof CarData]) {
+      setFieldErrors(prev => ({ ...prev, [name]: undefined }));
+    }
   };
 
-const handleSubmit = async (e: React.FormEvent) => {
+  const validateForm = (): boolean => {
+    const errors: FieldErrors = {};
+    let isValid = true;
+
+    if (formData.przebieg === '' || formData.przebieg < 0 || formData.przebieg >= 700000) {
+      errors.przebieg = 'Przebieg musi wynosić od 0 do 699 999 km.';
+      isValid = false;
+    }
+
+    if (formData.wiek === '' || formData.wiek < 0 || formData.wiek > 36) {
+      errors.wiek = 'Wiek musi wynosić od 0 do 36 lat (min. rocznik 1990).';
+      isValid = false;
+    }
+
+    if (formData.moc === '' || formData.moc <= 0 || formData.moc > 1000) {
+      errors.moc = 'Moc musi wynosić od 1 do 1000 KM.';
+      isValid = false;
+    }
+
+    if (
+      formData.pojemnosc_skokowa === '' || 
+      (formData.pojemnosc_skokowa !== 0 && (formData.pojemnosc_skokowa < 600 || formData.pojemnosc_skokowa > 8500))
+    ) {
+      errors.pojemnosc_skokowa = 'Pojemność: 0 cm³ (elektryki) lub 600-8500 cm³.';
+      isValid = false;
+    }
+
+    if (formData.marka.trim() === '') {
+      errors.marka = 'Pole marka nie może być puste.';
+      isValid = false;
+    }
+
+    setFieldErrors(errors);
+    return isValid;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setPredictedPrice(null);
@@ -84,22 +130,26 @@ const handleSubmit = async (e: React.FormEvent) => {
         <div style={{ display: 'flex', gap: '1rem' }}>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <label>Przebieg (km):</label>
-            <input type="number" name="przebieg" value={formData.przebieg} onChange={handleChange} required style={{ padding: '0.5rem' }} />
+            <input type="number" min="0" max="699999" name="przebieg" value={formData.przebieg} onChange={handleChange} required style={{ padding: '0.5rem', borderColor: fieldErrors.przebieg ? '#e74c3c' : '#ccc' }} />
+            {fieldErrors.przebieg && <span style={{ color: '#e74c3c', fontSize: '0.85rem', marginTop: '0.3rem' }}>{fieldErrors.przebieg}</span>}
           </div>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <label>Wiek (lata):</label>
-            <input type="number" name="wiek" value={formData.wiek} onChange={handleChange} required style={{ padding: '0.5rem' }} />
+            <input type="number" min="0" max="36" name="wiek" value={formData.wiek} onChange={handleChange} required style={{ padding: '0.5rem', borderColor: fieldErrors.wiek ? '#e74c3c' : '#ccc' }} />
+            {fieldErrors.wiek && <span style={{ color: '#e74c3c', fontSize: '0.85rem', marginTop: '0.3rem' }}>{fieldErrors.wiek}</span>}
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: '1rem' }}>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <label>Moc (KM):</label>
-            <input type="number" name="moc" value={formData.moc} onChange={handleChange} required style={{ padding: '0.5rem' }} />
+            <input type="number" min="1" max="1000" name="moc" value={formData.moc} onChange={handleChange} required style={{ padding: '0.5rem', borderColor: fieldErrors.moc ? '#e74c3c' : '#ccc' }} />
+            {fieldErrors.moc && <span style={{ color: '#e74c3c', fontSize: '0.85rem', marginTop: '0.3rem' }}>{fieldErrors.moc}</span>}
           </div>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
             <label>Pojemność (cm³):</label>
-            <input type="number" name="pojemnosc_skokowa" value={formData.pojemnosc_skokowa} onChange={handleChange} required style={{ padding: '0.5rem' }} />
+            <input type="number" min="0" max="8500" name="pojemnosc_skokowa" value={formData.pojemnosc_skokowa} onChange={handleChange} required style={{ padding: '0.5rem', borderColor: fieldErrors.pojemnosc_skokowa ? '#e74c3c' : '#ccc' }} />
+            {fieldErrors.pojemnosc_skokowa && <span style={{ color: '#e74c3c', fontSize: '0.85rem', marginTop: '0.3rem' }}>{fieldErrors.pojemnosc_skokowa}</span>}
           </div>
         </div>
 
@@ -112,8 +162,9 @@ const handleSubmit = async (e: React.FormEvent) => {
             onChange={handleChange} 
             required 
             placeholder="np. BMW, Toyota, Mercedes-Benz"
-            style={{ padding: '0.5rem' }} 
+            style={{ padding: '0.5rem', borderColor: fieldErrors.marka ? '#e74c3c' : '#ccc' }} 
           />
+          {fieldErrors.marka && <span style={{ color: '#e74c3c', fontSize: '0.85rem', marginTop: '0.3rem' }}>{fieldErrors.marka}</span>}
         </div>
 
         <div style={{ display: 'flex', gap: '1rem' }}>
